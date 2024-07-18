@@ -1,0 +1,35 @@
+﻿@model List<ProductModel>
+@{
+ 
+}
+<h3>The Product Specification</h3>
+
+<h6>This is a Product sub-folder </h6>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var prodt in Model)
+        {
+            <tr>
+                <td>@prodt.Name</td>
+                <td>@prodt.Description</td>
+                <td>@prodt.Price</td>
+                <td>@prodt.Quantity</td>
+            </tr>
+        }
+    </tbody>
+
+
+
+
+
+
+</table>
