@@ -1,0 +1,31 @@
+﻿@model List<Categories>
+@{
+
+}
+<h3>The Category Specification</h3>
+<a href="/Category/add" class="btn btn-primary">
+    Add Category
+</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var prodt in Model)
+        {
+            <tr>
+                <td>@prodt.Name</td>
+               
+            </tr>
+        }
+    </tbody>
+
+
+
+
+
+
+</table>
