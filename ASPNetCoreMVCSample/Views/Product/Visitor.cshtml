@@ -1,7 +1,7 @@
 ﻿@model X.PagedList.IPagedList<ProductModel>
-@using X.Web.PagedList
+@using X.Web.PagedList 
 
-<h4> This is the index for Product Contoller </h4>
+<h4> Index of Product Controller </h4>
 <h6> Welcome </h6>
 
 <table class="table table-striped">
@@ -14,17 +14,21 @@
 		</tr>
 	</thead>
 	<tbody>
+		<!-- Loop through each product in the paged list -->
 		@foreach (var prod in Model)
 		{
 			<tr>
+				
 				<td>@prod.Name</td>
 				<td>@prod.Description</td>
-				<td>&#x20A6; @prod.Price.ToString("N")</td>
+				<td>&#x20A6; @prod.Price.ToString("N")</td> <!-- Display the price with currency symbol and formatting -->
 				<td>@prod.Quantity</td>
 			</tr>
 		}
 	</tbody>
 </table>
+
+<!--Pagination controls for navigating through different pages of products -->
 <div class="pagination">
 	@Html.PagedListPager(Model, page => Url.Action("Visitor", "Product", new { page }))
 </div>

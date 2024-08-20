@@ -1,16 +1,20 @@
-﻿@model ASPNetCoreMVCSample.Models.Categories
+﻿@model ASPNetCoreMVCSample.Models.Categories 
 
 <div class="row">
     <div class="col-md-3">
+        <!-- Form to add a new category, posting the data to the "Add" action method in the controller -->
         <form asp-action="Add" method="post" class="form-horizontal">
+
+            
             <div class="form-group">
-                <label asp-for="Name" class="control-label">Name</label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label">Name</label> 
+                <input asp-for="Name" class="form-control" /> 
+                <span asp-validation-for="Name" class="text-danger"></span> 
             </div>
 
+            <!-- Form group for the Save button -->
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" /> 
             </div>
         </form>
     </div>
@@ -18,6 +22,7 @@
 
 @section Scripts {
     @{
+        // Render validation scripts to enable client-side validation in the form
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

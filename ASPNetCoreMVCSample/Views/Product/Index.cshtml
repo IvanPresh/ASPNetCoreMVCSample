@@ -1,8 +1,8 @@
-﻿@model X.PagedList.IPagedList<ProductModel>
-@using X.Web.PagedList
+﻿@model X.PagedList.IPagedList<ProductModel> 
+@using X.Web.PagedList 
 
 @{
-    // Check if the user is authenticated and in the Admin or SuperAdmin role
+    // Check if the user is authenticated and has the "Admin" or "SuperAdmin" role
     bool isAuthorized = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
 }
 
@@ -10,6 +10,7 @@
 
 @if (isAuthorized)
 {
+    // Display the "Add Product" button only if the user is authorized (Admin or SuperAdmin)
     <a href="@Url.Action("Add", "Product")" class="btn btn-primary">
         Add Product
     </a>
@@ -24,28 +25,32 @@
             <th>Quantity</th>
             @if (isAuthorized)
             {
+                // Show "Edit" and "Delete" columns only if the user is authorized
                 <th>Edit</th>
                 <th>Delete</th>
             }
         </tr>
     </thead>
     <tbody>
+        <!-- Loop through each product in the paged list -->
         @foreach (var prodt in Model)
         {
             <tr>
+              
                 <td>@prodt.Name</td>
                 <td>@prodt.Description</td>
-                <td>&#x20A6; @prodt.Price.ToString("N")</td>
+                <td>&#x20A6; @prodt.Price.ToString("N")</td> <!-- Format the price with currency symbol and commas -->
                 <td>@prodt.Quantity</td>
 
                 @if (isAuthorized)
                 {
+                    <!-- Show "Edit" and "Delete" buttons only if the user is authorized -->
                     <td>
                         <a href="/product/Edit/@prodt.Id" class="btn btn-primary">Edit</a>
                     </td>
                     <td>
                         <form asp-action="Delete" asp-controller="Product" method="post" onsubmit="return confirmDelete();">
-                            @Html.AntiForgeryToken()
+                            @Html.AntiForgeryToken() <!-- Anti-forgery token for security -->
                             <input type="hidden" name="id" value="@prodt.Id" />
                             <input type="submit" value="Delete" class="btn btn-danger btn-xs" />
                         </form>
@@ -56,11 +61,13 @@
     </tbody>
 </table>
 
+
 <div class="pagination">
     @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
 </div>
 
 <script>
+    // Confirmation dialog for delete action
     function confirmDelete() {
         return confirm('Are you sure you really want to delete this Product?');
     }
