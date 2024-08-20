@@ -4,7 +4,6 @@
 @{
     // Check if the user is authenticated and in the Admin or SuperAdmin role
     bool isAuthorized = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
-   
 }
 
 <h3>Products In-stock</h3>
@@ -16,7 +15,6 @@
     </a>
 }
 
-
 <table class="table table-striped">
     <thead>
         <tr>
@@ -24,8 +22,11 @@
             <th>Description</th>
             <th>Price</th>
             <th>Quantity</th>
-            <th></th>
-            <th></th>
+            @if (isAuthorized)
+            {
+                <th>Edit</th>
+                <th>Delete</th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -36,14 +37,20 @@
                 <td>@prodt.Description</td>
                 <td>&#x20A6; @prodt.Price.ToString("N")</td>
                 <td>@prodt.Quantity</td>
-                <td><a href="/product/Edit/@prodt.Id" class="btn btn-primary">Edit</a></td>
-                <td>
-                    <form asp-action="Delete" asp-controller="Product" method="post" data-Id="@prodt.Id" onsubmit="return confirmDelete();">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@prodt.Id" />
-                        <input type="submit" value="Delete" class="btn btn-danger btn-xs" />
-                    </form>
-                </td>
+
+                @if (isAuthorized)
+                {
+                    <td>
+                        <a href="/product/Edit/@prodt.Id" class="btn btn-primary">Edit</a>
+                    </td>
+                    <td>
+                        <form asp-action="Delete" asp-controller="Product" method="post" onsubmit="return confirmDelete();">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@prodt.Id" />
+                            <input type="submit" value="Delete" class="btn btn-danger btn-xs" />
+                        </form>
+                    </td>
+                }
             </tr>
         }
     </tbody>

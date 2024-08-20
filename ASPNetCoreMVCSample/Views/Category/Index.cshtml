@@ -19,11 +19,28 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var prodt in Model)
+        @foreach (var Catg in Model)
         {
             <tr>
-                <td>@prodt.Name</td>
+                <td>@Catg.Name</td>
+                
+                @if (isAuthorized)
+                {
+                    
+                    <td>
+                        <form asp-action="Delete" asp-controller="Category" method="post" onsubmit="return confirmDelete();">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Catg.Id" />
+                            <input type="submit" value="Delete" class="btn btn-danger btn-xs" />
+                        </form>
+                    </td>
+                }
             </tr>
         }
     </tbody>
 </table>
+<script>
+    function confirmDelete() {
+        return confirm('Are you sure you really want to delete this Product?');
+    }
+</script>

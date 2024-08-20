@@ -72,6 +72,22 @@ namespace ASPNetCoreMVCSample.Controllers
             // If the model state is invalid, return the view with the same model to show validation errors
             return View(categories);
         }
+        [HttpPost]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+
+        public IActionResult Delete(int id)
+        {
+            var categoryEntity = _db.Categories.Find(id);
+
+            if (categoryEntity == null)
+            {
+                return View("Error");
+            }
+            _db.Categories.Remove(categoryEntity);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+
+        }
 
     }
 }
