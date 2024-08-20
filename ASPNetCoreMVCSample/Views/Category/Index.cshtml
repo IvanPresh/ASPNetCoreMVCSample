@@ -1,16 +1,21 @@
 ﻿@model List<Categories>
-@{
 
+@{
+    // Check if the user is authenticated and in the Admin or SuperAdmin role
+    bool isAuthorized = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
 }
-<h3>The Category Specification</h3>
-<a href="/Category/add" class="btn btn-primary">
-    Add Category
-</a>
+
+@if (isAuthorized)
+{
+    <a href="@Url.Action("Add", "Category")" class="btn btn-primary">
+        Add Category
+    </a>
+}
+
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Name</th>
-            
         </tr>
     </thead>
     <tbody>
@@ -18,14 +23,7 @@
         {
             <tr>
                 <td>@prodt.Name</td>
-               
             </tr>
         }
     </tbody>
-
-
-
-
-
-
 </table>

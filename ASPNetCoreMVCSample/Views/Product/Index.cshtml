@@ -1,13 +1,22 @@
-﻿@model List<ProductModel>
-@{
- 
-}
-<h3>The Product Specification</h3>
+﻿@model X.PagedList.IPagedList<ProductModel>
+@using X.Web.PagedList
 
-<h6>This is a Product sub-folder </h6>
-<a href="/product/add" class="btn btn-primary">
-    Add Product
-</a>
+@{
+    // Check if the user is authenticated and in the Admin or SuperAdmin role
+    bool isAuthorized = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+   
+}
+
+<h3>Products In-stock</h3>
+
+@if (isAuthorized)
+{
+    <a href="@Url.Action("Add", "Product")" class="btn btn-primary">
+        Add Product
+    </a>
+}
+
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -27,11 +36,10 @@
                 <td>@prodt.Description</td>
                 <td>&#x20A6; @prodt.Price.ToString("N")</td>
                 <td>@prodt.Quantity</td>
-                <td><a href="/product/edit/@prodt.Id">edit</a></td>
+                <td><a href="/product/Edit/@prodt.Id" class="btn btn-primary">Edit</a></td>
                 <td>
                     <form asp-action="Delete" asp-controller="Product" method="post" data-Id="@prodt.Id" onsubmit="return confirmDelete();">
                         @Html.AntiForgeryToken()
-                        <input name="_method" type="hidden" value="DELETE" />
                         <input type="hidden" name="id" value="@prodt.Id" />
                         <input type="submit" value="Delete" class="btn btn-danger btn-xs" />
                     </form>
@@ -39,16 +47,14 @@
             </tr>
         }
     </tbody>
-
-
-
-
-
-
 </table>
+
+<div class="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+</div>
+
 <script>
-    function confirmDelete() 
-    {
+    function confirmDelete() {
         return confirm('Are you sure you really want to delete this Product?');
     }
 </script>

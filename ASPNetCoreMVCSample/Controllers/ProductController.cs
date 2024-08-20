@@ -1,8 +1,11 @@
 ﻿using ASPNetCoreMVCSample.Data;
 using ASPNetCoreMVCSample.Entities;
 using ASPNetCoreMVCSample.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
+using X.PagedList.Extensions;
 
 namespace ASPNetCoreMVCSample.Controllers
 {
@@ -15,8 +18,10 @@ namespace ASPNetCoreMVCSample.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? page)
         {
+            int pageSize = 5;
+            int pageNumber = page ?? 1;
 
             var products = _db.Products.ToList();
             var productmodellist = products.Select(x => new ProductModel
@@ -27,30 +32,123 @@ namespace ASPNetCoreMVCSample.Controllers
                 Price = x.Price,
                 Quantity = x.Quantity,
 
-            }).ToList();
+            }).ToPagedList(pageNumber,pageSize );
+
             return View(productmodellist);
         }
         [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Visitor(int? page)
+        {
+            int pageSize = 5;
+            int pageNumber = page ?? 1;
+
+            var products = _db.Products.ToList();
+            var productmodellist = products.Select(x => new ProductModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                Price = x.Price,
+                Quantity = x.Quantity,
+
+            }).ToPagedList(pageNumber, pageSize);
+
+            return View(productmodellist);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+
         public IActionResult Add()
         {
             return View();
         }
         [HttpPost]
-        public IActionResult Add(ProductModel productModel)
+        [Authorize(Roles = "Admin,SuperAdmin")]
+
+        public async Task<IActionResult> Add(ProductModel productModel)
         {
-            var productentities = new Product
+            try
+			{
+				List<string> imagePaths = await SaveImagesToDirectory(productModel);
+				var productEntity = new Product
+				{
+					Name = productModel.Name,
+					Description = productModel.Description,
+					Price = productModel.Price,
+					Quantity = productModel.Quantity,
+				};
+				_db.Products.Add(productEntity);
+				_db.SaveChanges();
+				await SaveProductImagesPathsToDb(imagePaths, productEntity);
+				//return RedirectToAction("Index");
+				return Json(new { success = true, redirectUrl = Url.Action("Index") });
+			}
+			catch (Exception e)
             {
-                Name = productModel.Name,
-                Description = productModel.Description,
-                Price = productModel.Price,
-                Quantity = productModel.Quantity,
-            };
-           _db.Products.Add(productentities);
-            _db.SaveChanges();
-            return RedirectToAction("Index");   
+                throw;
+            }
+               
             
         }
-        [HttpGet]
+
+		private async Task SaveProductImagesPathsToDb(List<string> imagePaths, Product productEntity)
+		{
+			// Associate the uploaded image file paths with the product
+			if (imagePaths.Count > 0)
+			{
+				foreach (var imagePath in imagePaths)
+				{
+					var imageEntity = new ProductImage
+					{
+						ProductId = productEntity.Id,
+						ImagePath = imagePath
+					};
+
+					_db.ProductImages.Add(imageEntity);
+				}
+
+				await _db.SaveChangesAsync();
+			}
+		}
+
+		private static async Task<List<string>> SaveImagesToDirectory(ProductModel productModel)
+		{
+			// Create a list to store the file paths associated with the product
+			List<string> imagePaths = new List<string>();
+
+			// Handle the uploaded images
+			if (productModel.Images != null && productModel.Images.Count > 0)
+			{
+				foreach (var imageFile in productModel.Images)
+				{
+					if (imageFile != null && imageFile.Length > 0)
+					{
+						// Save the image to a location of your choice, e.g., a folder on the server
+						// You can generate a unique file name to avoid overwriting existing images
+						var fileName = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
+						var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
+
+						using (var stream = new FileStream(filePath, FileMode.Create))
+						{
+							await imageFile.CopyToAsync(stream);
+						}
+
+						// Store the file path or other information in your database for reference
+						// You can associate the file with the product being added
+						// Store the file path in the list
+						imagePaths.Add("images/" + fileName);
+					}
+				}
+			}
+
+			return imagePaths;
+		}
+
+		[HttpGet]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+
         public IActionResult Edit(int id)
         {
             //look for product with this id
@@ -69,15 +167,20 @@ namespace ASPNetCoreMVCSample.Controllers
             productModel.Price= productEntity.Price;
             productModel.Quantity= productEntity.Quantity;
             productModel.Id= productEntity.Id;
+            productModel.ImagePaths= _db.ProductImages.Where(p=>p.ProductId==productModel.Id)
+                .Select(i=>i.ImagePath).ToList();
             
             return View(productModel);
         
         }
         [HttpPost]
-        public IActionResult Edit(ProductModel productModel) 
+        [Authorize(Roles = "Admin,SuperAdmin")]
+
+        public async Task<IActionResult> Edit(ProductModel productModel) 
         {
-            //look for product with this id
-            var productEntity = _db.Products.Find(productModel.Id);
+			List<string> imagePaths = await SaveImagesToDirectory(productModel);
+			//look for product with this id
+			var productEntity = _db.Products.Find(productModel.Id);
 
             /*if this product is not found with that id
             return not found*/
@@ -91,9 +194,14 @@ namespace ASPNetCoreMVCSample.Controllers
             productEntity.Price = productModel.Price;
             productEntity.Quantity = productModel.Quantity;
             _db.SaveChanges();
-            return RedirectToAction("Index");
+			await SaveProductImagesPathsToDb(imagePaths, productEntity);
+			//return RedirectToAction("Index");
+			return Json(new { success = true, redirectUrl = Url.Action("Index") });
+			
         }
         [HttpPost]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+
         public IActionResult Delete(int id) 
         {
             var productEntity = _db.Products.Find(id);
