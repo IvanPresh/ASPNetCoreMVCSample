@@ -1,6 +1,7 @@
 ﻿using ASPNetCoreMVCSample.Entities;
 using ASPNetCoreMVCSample.Helpers;
 using ASPNetCoreMVCSample.Models;
+using ASPNetCoreMVCSample.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,16 +15,18 @@ namespace ASPNetCoreMVCSample.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly EmailService _emailService;
 
         // Constructor injecting services required for authentication and authorization
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, EmailService emailService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
+            _emailService = emailService;
         }
 
-       
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Login()
@@ -127,7 +130,7 @@ namespace ASPNetCoreMVCSample.Controllers
             }
 
             await _userManager.AddToRoleAsync(user, role);
-
+            _emailService.SendEmail(new DTO.EmailDTO { From = "mcpreciousshalom@gmail.com", To = user.Email, Body = "Welcome to Our Application" });
             // Redirect to the login page after successful registration
             return RedirectToAction("Login");
         }

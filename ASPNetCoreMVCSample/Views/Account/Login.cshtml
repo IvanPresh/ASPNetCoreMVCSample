@@ -1,4 +1,4 @@
-﻿@model LoginModel 
+﻿@model LoginModel
 
 <div class="container">
     <div class="row">
@@ -8,25 +8,29 @@
             <h2 class="text-center text-dark mt-5">Login</h2>
             <div class="text-center mb-5 text-dark"></div>
             <div class="card my-5">
-                
-                
+
+
                 <form class="card-body cardbody-color p-lg-5" asp-controller="account" asp-action="Login" method="post">
 
                     <!-- Profile image placeholder in the login form -->
+                    <div asp-validation-summary="All" class="text-danger">
+                    </div>
                     <div class="text-center">
                         <img src="" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
-                             width="200px" alt="profile"> 
+                             width="200px" alt="profile">
                     </div>
 
                     <!-- Username input field -->
                     <div class="mb-3">
                         <input type="text" class="form-control" id="Username" aria-describedby="emailHelp"
                                placeholder="User Name" asp-for="Username">
+                        <span asp-validation-for="Username" class="text-danger"></span>
                     </div>
 
                     <!-- Password input field -->
                     <div class="mb-3">
                         <input type="password" class="form-control" id="password" placeholder="password" asp-for="Password">
+                        <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
                     <!-- Submit button to log in -->
@@ -39,9 +43,14 @@
                         Not Registered? <a href="@Url.Action("Register", "Account")" class="text-blue fw-bold">Create an Account</a>
                     </div>
 
-                </form> 
-            </div> 
+                </form>
+            </div>
 
-        </div> 
-    </div> 
-</div> 
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

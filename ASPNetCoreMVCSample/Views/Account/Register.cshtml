@@ -5,13 +5,14 @@
         <div class="col-md-6 offset-md-3">
             <!-- Header for the registration page -->
             <h2 class="text-center text-dark mt-5">Register</h2>
-            
+
             <div class="text-center mb-5 text-dark"></div>
             <div class="card my-5">
 
                 <!-- Form for user registration -->
                 <form class="card-body cardbody-color p-lg-5" asp-controller="Account" asp-action="Register" method="post">
-
+                    <div asp-validation-summary="All" class="text-danger">
+                    </div>
                     <!-- Profile image placeholder -->
                     <div class="text-center">
                         <!-- Replace src with a valid URL if you want to display a profile picture -->
@@ -23,28 +24,33 @@
                     <div class="mb-3">
                         <input type="text" class="form-control" id="Username" aria-describedby="usernameHelp"
                                placeholder="User Name" asp-for="Username">
+                        <span asp-validation-for="Username" class="text-danger"></span>
                     </div>
 
-                  
+
                     <div class="mb-3">
                         <input type="password" class="form-control" id="Password" placeholder="Password" asp-for="Password">
+                        <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
-                    
+
                     <div class="mb-3">
                         <input type="password" class="form-control" id="ConfirmPassword" placeholder="Confirm Password" asp-for="ConfirmPassword">
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
 
-                    
+
                     <div class="mb-3">
                         <input type="text" class="form-control" id="FirstName" aria-describedby="firstNameHelp"
                                placeholder="First Name" asp-for="FirstName">
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
                     </div>
 
-                    
+
                     <div class="mb-3">
                         <input type="text" class="form-control" id="LastName" aria-describedby="lastNameHelp"
                                placeholder="Last Name" asp-for="LastName">
+                        <span asp-validation-for="LastName" class="text-danger"></span>
                     </div>
 
                     <!-- Submit button -->
@@ -62,3 +68,8 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

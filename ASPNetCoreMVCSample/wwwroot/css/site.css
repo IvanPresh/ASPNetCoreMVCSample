@@ -17,14 +17,13 @@ html {
   min-height: 100%;
 }
 
-body 
-{
-    background-color:cornflowerblue;
-  margin-bottom: 60px;
+body {
+    background-color: #74f0ed;
+    margin-bottom: 60px;
 }
 .btn-color {
     background-color: #0e1c36;
-    color: #fff;
+    color: #f0f0f0;
 }
 
 .profile-image-pic {
@@ -40,5 +39,5 @@ body
 }
 
 a {
-    text-decoration: none;
+    text-decoration: inherit;
 }

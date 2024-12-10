@@ -7,6 +7,8 @@ namespace ASPNetCoreMVCSample.Models
         [Required]
         public string Username { get; set; }
         [Required]
+        [StringLength(maximumLength: 100, MinimumLength = 6)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }    
     }
 }

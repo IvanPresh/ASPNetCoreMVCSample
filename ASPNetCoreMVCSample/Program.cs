@@ -1,12 +1,15 @@
 using ASPNetCoreMVCSample.Data;
 using ASPNetCoreMVCSample.Entities;
+using ASPNetCoreMVCSample.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MyDbContext>(x =>
 {
